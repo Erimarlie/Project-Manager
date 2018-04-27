@@ -18,8 +18,8 @@ def get_duration(*args):
         
 def get_total(*args):
     try:
-        value = vesselprice.get() + othercosts.get() + workingcapital.get()
-        total.set(value)
+        value = int(vesselprice.get()) + int(othercosts.get()) + int(workingcapital.get())
+        total.set("{:,}".format(value))
     except ValueError:
         pass
 
@@ -80,9 +80,9 @@ dur.grid(column=2, row=4, sticky=(W, E))
 Project costs frame
 ---------------------------------------------------------------------------------
 '''
-vesselprice = IntVar()
-othercosts = IntVar()
-workingcapital = IntVar()
+vesselprice = StringVar()
+othercosts = StringVar()
+workingcapital = StringVar()
 total = IntVar()
 salesprice = IntVar()
 
