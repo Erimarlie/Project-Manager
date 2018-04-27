@@ -25,9 +25,14 @@ def get_project_end(*args):
         
 def get_total(*args):
     try:
+<<<<<<< HEAD
         value = vesselprice.get() + othercosts.get() + workingcapital.get()
         total.set(str("{:,}".format(value)))
         gearing_ratio()
+=======
+        value = int(vesselprice.get()) + int(othercosts.get()) + int(workingcapital.get())
+        total.set("{:,}".format(value))
+>>>>>>> 0a5f9e38df905abc1ff31053c2b3ed7182ef8903
     except ValueError:
         pass
 
@@ -94,6 +99,9 @@ Project costs frame
 vesselprice = IntVar()
 othercosts = IntVar()
 workingcapital = IntVar()
+vesselprice = StringVar()
+othercosts = StringVar()
+workingcapital = StringVar()
 total = IntVar()
 salesprice = IntVar()
 
