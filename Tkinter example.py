@@ -9,10 +9,17 @@ def calculate(*args):
     except ValueError:
         pass
     
-def get_end_project(*args):
+def get_duration(*args):
     try:
         end = project_end.get() - startyear.get()
         duration.set(end)
+    except ValueError:
+        pass
+
+def get_total(*args):
+    try:
+        value = vesselprice.get() + othercosts.get()
+        total.set(value)
     except ValueError:
         pass
 
@@ -36,9 +43,13 @@ startyear = IntVar()
 project_end = IntVar()
 duration = IntVar()
 
-ship_info = ttk.Labelframe(mainframe, text="Vessel information") # Create labelframe window for vessel information
+# Trace changes and execute function
+startyear.trace("w", get_duration) 
+project_end.trace("w", get_duration)
+
+ship_info = ttk.Labelframe(mainframe, text="Vessel information")
 ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
-ship_info.columnconfigure(1, minsize=120)   # Set minsize of column 1 to 120px
+ship_info.columnconfigure(1, minsize=120)
 
 ttk.Label(ship_info, text="Project name").grid(column=1, row=1, sticky=W)
 project_name = ttk.Entry(ship_info, width=25, textvariable=projectname)
@@ -60,12 +71,19 @@ ttk.Label(ship_info, textvariable=duration).grid(column=2, row=4, sticky=W)
 Project costs frame
 ---------------------------------------------------------------------------------
 '''
-vesselprice = StringVar()
-othercosts = StringVar()
-workingcapital = StringVar()
+vesselprice = IntVar()
+othercosts = IntVar()
+workingcapital = IntVar()
+total = IntVar()
+salesprice = IntVar()
+
+# Trace changes and execute function
+vesselprice.trace("w", get_total)
+othercosts.trace("w", get_total)
+workingcapital.trace("w", get_total)
 
 project_costs = ttk.Labelframe(mainframe, text="Project costs")
-project_costs.grid(columnspan=2, column=1, row=2, sticky=(N, W, E, S))
+project_costs.grid(column=1, row=2, sticky=(N, W, E, S))
 project_costs.columnconfigure(1, minsize=120)   # Set minsize of column 1 to 120px
 
 ttk.Label(project_costs, text="Vessel price").grid(column=1, row=1, sticky=W)
@@ -81,8 +99,53 @@ working_capital = ttk.Entry(project_costs, width=25, textvariable=workingcapital
 working_capital.grid(column=2, row=3, sticky=(W, E))
 
 ttk.Label(project_costs, text="Total costs").grid(column=1, row=4, sticky=W)
+ttk.Label(project_costs, textvariable=total).grid(column=2, row=4, sticky=W)
+
+ttk.Label(project_costs, text="Salesprice").grid(column=1, row=5, sticky=W)
+sales_price = ttk.Entry(project_costs, width=25, textvariable=salesprice)
+sales_price.grid(column=2, row=5, sticky=(W, E))
+
+"""
+---------------------------------------------------------------------------------
+Operations frame
+---------------------------------------------------------------------------------
+"""
+commission = StringVar()
+opcost = StringVar()
+escopcost = StringVar()
+admcosts = StringVar()
+onhiredays = StringVar()
+
+operations = ttk.Labelframe(mainframe, text="Operation")
+operations.grid(column=2, row=2, sticky=(N, W, E, S))
+operations.columnconfigure(1, minsize=120)
+
+ttk.Label(operations, text="Commission rate").grid(column=1, row=1, sticky=W)
+comm_rate = ttk.Entry(operations, width=25, textvariable=commission)
+comm_rate.grid(column=2, row=1, sticky=(W, E))
+
+ttk.Label(operations, text="Op cost / day").grid(column=1, row=2, sticky=W)
+op_cost = ttk.Entry(operations, width=25, textvariable=opcost)
+op_cost.grid(column=2, row=2, sticky=(W, E))
+
+ttk.Label(operations, text="Escalation op cost").grid(column=1, row=3, sticky=W)
+esc_opcost = ttk.Entry(operations, width=25, textvariable=escopcost)
+esc_opcost.grid(column=2, row=3, sticky=(W, E))
+
+ttk.Label(operations, text="Adm costs / year").grid(column=1, row=4, sticky=W)
+adm_costs = ttk.Entry(operations, width=25, textvariable=admcosts)
+adm_costs.grid(column=2, row=4, sticky=(W, E))
+
+ttk.Label(operations, text="On-hire days").grid(column=1, row=5, sticky=W)
+onhire_days = ttk.Entry(operations, width=25, textvariable=onhiredays)
+onhire_days.grid(column=2, row=5, sticky=(W, E))
 
 
+"""
+---------------------------------------------------------------------------------
+Some grid configuration and shit
+---------------------------------------------------------------------------------
+"""
 for child in mainframe.winfo_children(): 
     child.grid_configure(padx=8, pady=4)
 
@@ -92,6 +155,7 @@ for child in ship_info.winfo_children():
 for child in project_costs.winfo_children():
     child.grid_configure(padx=8, pady=4)
 
-root.bind('<Return>', get_end_project)
+for child in operations.winfo_children():
+    child.grid_configure(padx=8, pady=4)
 
 root.mainloop()
