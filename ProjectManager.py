@@ -15,13 +15,6 @@ def get_duration(*args):
         duration.set(end)
     except ValueError:
         pass
-        
-def get_total(*args):
-    try:
-        value = vesselprice.get() + othercosts.get() + workingcapital.get()
-        total.set(value)
-    except ValueError:
-        pass
 
 def get_project_end(*args):
     try:
@@ -29,6 +22,24 @@ def get_project_end(*args):
         project_end.set(value)
     except ValueError:
         pass
+        
+def get_total(*args):
+    try:
+        value = vesselprice.get() + othercosts.get() + workingcapital.get()
+        total.set(str("{:,}".format(value)))
+        gearing_ratio()
+    except ValueError:
+        pass
+
+def gearing_ratio(*args):
+    try:
+        loan = total.get() / 100 * gearing.get()
+        loans.set(int(loan))
+        equi = total.get() / 100 * (100-gearing.get())
+        equity.set(int(equi))
+    except ValueError:
+        pass
+
 
 root = Tk()
 root.title("Project Manager")
@@ -60,7 +71,7 @@ ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
 ship_info.columnconfigure(1, minsize=120)
 
 ttk.Label(ship_info, text="Project name").grid(column=1, row=1, sticky=W)
-project_name = ttk.Entry(ship_info, width=25, textvariable=projectname)
+project_name = ttk.Entry(ship_info, width=25, textvariable= projectname)
 project_name.grid(column=2, row=1, sticky=(W, E))
 
 ttk.Label(ship_info, text="Project start").grid(column=1, row=2, sticky=W)
@@ -122,7 +133,7 @@ Operations frame
 commission = StringVar()
 opcost = StringVar()
 escopcost = StringVar()
-admcosts = StringVar()
+admincosts = StringVar()
 onhiredays = StringVar()
 
 operations = ttk.Labelframe(mainframe, text="Operation")
@@ -141,8 +152,8 @@ ttk.Label(operations, text="Escalation op cost").grid(column=1, row=3, sticky=W)
 esc_opcost = ttk.Entry(operations, width=25, textvariable=escopcost)
 esc_opcost.grid(column=2, row=3, sticky=(W, E))
 
-ttk.Label(operations, text="Adm costs / year").grid(column=1, row=4, sticky=W)
-adm_costs = ttk.Entry(operations, width=25, textvariable=admcosts)
+ttk.Label(operations, text="Adm cost / year").grid(column=1, row=4, sticky=W)
+adm_costs = ttk.Entry(operations, width=25, textvariable=admincosts)
 adm_costs.grid(column=2, row=4, sticky=(W, E))
 
 ttk.Label(operations, text="On-hire days").grid(column=1, row=5, sticky=W)
@@ -158,11 +169,14 @@ gearing = IntVar()
 equity = IntVar()
 loans = IntVar()
 
+# Trace changes and execute function
+gearing.trace("w", gearing_ratio)
+
 financing = ttk.Labelframe(mainframe, text="Financing")
 financing.grid(column=1, columnspan=2, row=3, sticky=(N, W, E, S))
 financing.columnconfigure(1, minsize=120)
 
-ttk.Label(financing, text="Gearing").grid(column=1, row=1, sticky=W)
+ttk.Label(financing, text="Gearing %").grid(column=1, row=1, sticky=W)
 gearing_ = ttk.Entry(financing, width=25, textvariable=gearing)
 gearing_.grid(column=2, row=1, sticky=(W, E))
 
