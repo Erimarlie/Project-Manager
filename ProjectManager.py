@@ -25,14 +25,9 @@ def get_project_end(*args):
         
 def get_total(*args):
     try:
-<<<<<<< HEAD
         value = vesselprice.get() + othercosts.get() + workingcapital.get()
         total.set(str("{:,}".format(value)))
         gearing_ratio()
-=======
-        value = int(vesselprice.get()) + int(othercosts.get()) + int(workingcapital.get())
-        total.set("{:,}".format(value))
->>>>>>> 0a5f9e38df905abc1ff31053c2b3ed7182ef8903
     except ValueError:
         pass
 
@@ -96,9 +91,9 @@ dur.grid(column=2, row=4, sticky=(W, E))
 Project costs frame
 ---------------------------------------------------------------------------------
 '''
-vesselprice = StringVar()
-othercosts = StringVar()
-workingcapital = StringVar()
+vesselprice = IntVar()
+othercosts = IntVar()
+workingcapital = IntVar()
 total = IntVar()
 salesprice = IntVar()
 
@@ -181,7 +176,7 @@ financing = ttk.Labelframe(mainframe, text="Financing")
 financing.grid(column=1, columnspan=2, row=3, sticky=(N, W, E, S))
 financing.columnconfigure(1, minsize=120)
 
-ttk.Label(financing, text="Gearing %").grid(column=1, row=1, sticky=W)
+ttk.Label(financing, text="Gearing").grid(column=1, row=1, sticky=W)
 gearing_ = ttk.Entry(financing, width=25, textvariable=gearing)
 gearing_.grid(column=2, row=1, sticky=(W, E))
 
