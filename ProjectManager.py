@@ -15,11 +15,18 @@ def get_duration(*args):
         duration.set(end)
     except ValueError:
         pass
-
+        
 def get_total(*args):
     try:
-        value = vesselprice.get() + othercosts.get()
+        value = vesselprice.get() + othercosts.get() + workingcapital.get()
         total.set(value)
+    except ValueError:
+        pass
+
+def get_project_end(*args):
+    try:
+        value = startyear.get() + duration.get()
+        project_end.set(value)
     except ValueError:
         pass
 
@@ -46,6 +53,7 @@ duration = IntVar()
 # Trace changes and execute function
 startyear.trace("w", get_duration) 
 project_end.trace("w", get_duration)
+duration.trace("w", get_project_end)
 
 ship_info = ttk.Labelframe(mainframe, text="Vessel information")
 ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
@@ -56,15 +64,16 @@ project_name = ttk.Entry(ship_info, width=25, textvariable=projectname)
 project_name.grid(column=2, row=1, sticky=(W, E))
 
 ttk.Label(ship_info, text="Project start").grid(column=1, row=2, sticky=W)
-start_year = Spinbox(ship_info, from_=year, to=year + 25, textvariable=startyear)
+start_year = Spinbox(ship_info, from_=year, to=year + 45, textvariable=startyear)
 start_year.grid(column=2, row=2, sticky=(W, E))
 
 ttk.Label(ship_info, text="Project end").grid(column=1, row=3, sticky=W)
-end = Spinbox(ship_info, from_=year, to=year + 25, textvariable=project_end)
+end = Spinbox(ship_info, from_=year, to=year + 45, textvariable=project_end)
 end.grid(column=2, row=3, sticky=(W, E))
 
 ttk.Label(ship_info, text="Duration").grid(column=1, row=4, sticky=W)
-ttk.Label(ship_info, textvariable=duration).grid(column=2, row=4, sticky=W)
+dur = ttk.Entry(ship_info, textvariable=duration)
+dur.grid(column=2, row=4, sticky=(W, E))
 
 ''' 
 ---------------------------------------------------------------------------------
@@ -140,6 +149,30 @@ ttk.Label(operations, text="On-hire days").grid(column=1, row=5, sticky=W)
 onhire_days = ttk.Entry(operations, width=25, textvariable=onhiredays)
 onhire_days.grid(column=2, row=5, sticky=(W, E))
 
+"""
+---------------------------------------------------------------------------------
+Finances frame
+---------------------------------------------------------------------------------
+"""
+gearing = IntVar()
+equity = IntVar()
+loans = IntVar()
+
+financing = ttk.Labelframe(mainframe, text="Financing")
+financing.grid(column=1, columnspan=2, row=3, sticky=(N, W, E, S))
+financing.columnconfigure(1, minsize=120)
+
+ttk.Label(financing, text="Gearing").grid(column=1, row=1, sticky=W)
+gearing_ = ttk.Entry(financing, width=25, textvariable=gearing)
+gearing_.grid(column=2, row=1, sticky=(W, E))
+
+ttk.Label(financing, text="Equity").grid(column=1, row=2, sticky=W)
+equity_ = ttk.Entry(financing, width=25, textvariable=equity)
+equity_.grid(column=2, row=2, sticky=(W, E))
+
+ttk.Label(financing, text="Loans").grid(column=1, row=3, sticky=W)
+loans_ = ttk.Entry(financing, width=25, textvariable=loans)
+loans_.grid(column=2, row=3, sticky=(W, E))
 
 """
 ---------------------------------------------------------------------------------
@@ -156,6 +189,9 @@ for child in project_costs.winfo_children():
     child.grid_configure(padx=8, pady=4)
 
 for child in operations.winfo_children():
+    child.grid_configure(padx=8, pady=4)
+
+for child in financing.winfo_children():
     child.grid_configure(padx=8, pady=4)
 
 root.mainloop()
