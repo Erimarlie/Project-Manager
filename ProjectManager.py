@@ -96,9 +96,6 @@ dur.grid(column=2, row=4, sticky=(W, E))
 Project costs frame
 ---------------------------------------------------------------------------------
 '''
-vesselprice = IntVar()
-othercosts = IntVar()
-workingcapital = IntVar()
 vesselprice = StringVar()
 othercosts = StringVar()
 workingcapital = StringVar()
