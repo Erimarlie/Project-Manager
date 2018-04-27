@@ -26,7 +26,7 @@ def get_project_end(*args):
 def get_total(*args):
     try:
         value = vesselprice.get() + othercosts.get() + workingcapital.get()
-        total.set(str("{:,}".format(value)))
+        total.set(value)
         gearing_ratio()
     except ValueError:
         pass
@@ -71,7 +71,7 @@ ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
 ship_info.columnconfigure(1, minsize=120)
 
 ttk.Label(ship_info, text="Project name").grid(column=1, row=1, sticky=W)
-project_name = ttk.Entry(ship_info, width=25, textvariable= projectname)
+project_name = ttk.Entry(ship_info, width=25, textvariable=projectname)
 project_name.grid(column=2, row=1, sticky=(W, E))
 
 ttk.Label(ship_info, text="Project start").grid(column=1, row=2, sticky=W)
@@ -181,12 +181,14 @@ gearing_ = ttk.Entry(financing, width=25, textvariable=gearing)
 gearing_.grid(column=2, row=1, sticky=(W, E))
 
 ttk.Label(financing, text="Equity").grid(column=1, row=2, sticky=W)
-equity_ = ttk.Entry(financing, width=25, textvariable=equity)
-equity_.grid(column=2, row=2, sticky=(W, E))
+#equity_ = ttk.Entry(financing, width=25, textvariable=equity)
+#equity_.grid(column=2, row=2, sticky=(W, E))
+ttk.Label(financing, textvariable=equity).grid(column=2, row=2, sticky=W)
 
 ttk.Label(financing, text="Loans").grid(column=1, row=3, sticky=W)
-loans_ = ttk.Entry(financing, width=25, textvariable=loans)
-loans_.grid(column=2, row=3, sticky=(W, E))
+#loans_ = ttk.Entry(financing, width=25, textvariable=loans)
+#loans_.grid(column=2, row=3, sticky=(W, E))
+ttk.Label(financing, textvariable=loans).grid(column=2, row=3, sticky=W)
 
 """
 ---------------------------------------------------------------------------------
