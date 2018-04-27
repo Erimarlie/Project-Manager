@@ -36,10 +36,11 @@ startyear = IntVar()
 project_end = IntVar()
 duration = IntVar()
 
-ship_info = ttk.Labelframe(mainframe, text="Vessel information")
-ship_info.grid(columnspan=5, row=1)
+ship_info = ttk.Labelframe(mainframe, text="Vessel information") # Create labelframe window for vessel information
+ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
+ship_info.columnconfigure(1, minsize=120)   # Set minsize of column 1 to 120px
 
-ttk.Label(ship_info, text="Project name").grid(column=1, row=1)
+ttk.Label(ship_info, text="Project name").grid(column=1, row=1, sticky=W)
 project_name = ttk.Entry(ship_info, width=25, textvariable=projectname)
 project_name.grid(column=2, row=1, sticky=(W, E))
 
@@ -60,17 +61,30 @@ Project costs frame
 ---------------------------------------------------------------------------------
 '''
 vesselprice = StringVar()
+othercosts = StringVar()
+workingcapital = StringVar()
 
 project_costs = ttk.Labelframe(mainframe, text="Project costs")
-project_costs.grid(columnspan=3, row=2)
+project_costs.grid(columnspan=2, column=1, row=2, sticky=(N, W, E, S))
+project_costs.columnconfigure(1, minsize=120)   # Set minsize of column 1 to 120px
 
-ttk.Label(project_costs, text="Vessel price").grid(column=1, row=1)
+ttk.Label(project_costs, text="Vessel price").grid(column=1, row=1, sticky=W)
 vessel_price = ttk.Entry(project_costs, width=25, textvariable=vesselprice)
 vessel_price.grid(column=2, row=1, sticky=(W, E))
 
+ttk.Label(project_costs, text="Other costs").grid(column=1, row=2, sticky=W)
+other_costs = ttk.Entry(project_costs, width=25, textvariable=othercosts)
+other_costs.grid(column=2, row=2, sticky=(W, E))
+
+ttk.Label(project_costs, text="Working capital").grid(column=1, row=3, sticky=W)
+working_capital = ttk.Entry(project_costs, width=25, textvariable=workingcapital)
+working_capital.grid(column=2, row=3, sticky=(W, E))
+
+ttk.Label(project_costs, text="Total costs").grid(column=1, row=4, sticky=W)
+
 
 for child in mainframe.winfo_children(): 
-    child.grid_configure(padx=12, pady=12)
+    child.grid_configure(padx=8, pady=4)
 
 for child in ship_info.winfo_children():
     child.grid_configure(padx=8, pady=4)
