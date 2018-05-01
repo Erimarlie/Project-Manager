@@ -25,11 +25,17 @@ class Vessel():
         #Finances frame
         self.finances()
 
+        #Finance-rates frame
+        self.financerates()
+
+        #Grid/Layout setup
+        self.gridsetup()
+
         #Main loop
         root.mainloop()  
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
         
-        #Vessel information frame
+#Vessel information frame
     def vessel_info(self, *args):
         year = datetime.date.today().year
         self.projectname = StringVar()
@@ -62,9 +68,9 @@ class Vessel():
         self.startyear.trace("w", self.get_duration)
         self.project_end.trace("w", self.get_duration)
         #self.duration.trace("w", self.get_project_end)
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
 
-        #Project costs frame
+#Project costs frame
     def proj_costs(self, *args):
         self.vesselprice = StringVar()
         self.othercosts = StringVar()
@@ -106,9 +112,9 @@ class Vessel():
         self.vesselprice.trace("w", self.get_total)
         self.othercosts.trace("w", self.get_total)
         self.workingcapital.trace("w", self.get_total)
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
 
-        #Operations frame
+#Operations frame
     def operation(self, *args):
         self.commission = StringVar()
         self.opcost = StringVar()
@@ -145,9 +151,9 @@ class Vessel():
         onhire_days = ttk.Entry(self.operations, width=12, textvariable=self.onhiredays)
         onhire_days.grid(column=2, row=5, sticky=(W, E))
 
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
 
-        #Finances frame
+#Finances frame
     def finances(self, *args):
         self.gearing = StringVar()
         self.equity = IntVar()
@@ -177,9 +183,10 @@ class Vessel():
         ttk.Label(self.financing, textvariable=self.loans
         ).grid(column=2, row=3, sticky=W)
 
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
 
-        #Finance rates frame
+#Finance rates frame    
+    def financerates(self):
         self.financerates = ttk.Labelframe(self.mainframe, text="Finance rates")
         self.financerates.grid(column=2, row=3, sticky=(N, W, E, S))
         self.financerates.columnconfigure(1, minsize=120)
@@ -190,7 +197,10 @@ class Vessel():
         first_pri.grid(column=2, row=1, sticky=(W, E))
         #Trace changes and execute function
         self.gearing.trace("w", self.gearing_ratio)
-        #-----------------------------------------------
+#---------------------------------------------------------------------------------------------
+
+#Functions
+    def gridsetup(self):
         for child in self.mainframe.winfo_children(): 
             child.grid_configure(padx=4, pady=1)
 
