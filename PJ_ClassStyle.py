@@ -5,13 +5,19 @@ import datetime
 
 class Vessel():
     def __init__(self):
-        root = Tk()
-        root.title("Project Manager")
-        root.geometry("1024x768")
-        self.mainframe = ttk.Frame(root, padding="3 3 12 12")
+        self.root = Tk()
+        self.root.title("Project Manager")
+        self.root.geometry("1200x800")
+        self.mainframe = ttk.Frame(self.root)
         self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         self.mainframe.columnconfigure(0, weight=1)
+        self.mainframe.columnconfigure(1, weight=1, minsize=300)
+        self.mainframe.columnconfigure(2, weight=1, minsize=300)
+        self.mainframe.columnconfigure(3, weight=1, minsize=300)
+        self.mainframe.columnconfigure(4, weight=1, minsize=300)
         self.mainframe.rowconfigure(0, weight=1)
+        self.mainframe.rowconfigure(1, weight=1)
+        self.mainframe.rowconfigure(2, weight=1)
         
         #Vessel information frame
         self.vessel_info()
@@ -28,11 +34,14 @@ class Vessel():
         #Finance-rates frame
         self.financerates()
 
+        #Annual figures frame
+        self.annual_figures()
+
         #Grid/Layout setup
         self.gridsetup()
 
         #Main loop
-        root.mainloop()  
+        self.root.mainloop()  
 #---------------------------------------------------------------------------------------------
         
 #Vessel information frame
@@ -41,71 +50,63 @@ class Vessel():
         self.projectname = StringVar()
         self.startyear = IntVar()
         self.project_end = IntVar()
-        self.duration = StringVar(value="0 years")
+        self.duration = IntVar()
 
         self.ship_info = ttk.Labelframe(self.mainframe, text="Vessel information")
         self.ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
         self.ship_info.columnconfigure(1, minsize=120)
-        self.ship_info.columnconfigure(2, minsize=100)
+        self.ship_info.columnconfigure(2, minsize=75)
 
         ttk.Label(self.ship_info, text="Project name").grid(column=1, row=1, sticky=W)
-        ttk.Entry(self.ship_info, width=12, textvariable=self.projectname
-        ).grid(column=2, row=1, sticky=(W, E))
+        ttk.Entry(self.ship_info, textvariable=self.projectname).grid(column=2, row=1, sticky=(W, E))
 
         ttk.Label(self.ship_info, text="Project start").grid(column=1, row=2, sticky=W)
-        Spinbox(self.ship_info, width=12, from_=year, to=year + 45, textvariable=self.startyear
-        ).grid(column=2, row=2, sticky=(W, E))
+        Spinbox(self.ship_info, from_=year, to=year+45, textvariable=self.startyear).grid(column=2, row=2, sticky=(W, E))
 
         ttk.Label(self.ship_info, text="Project end").grid(column=1, row=3, sticky=W)
-        Spinbox(self.ship_info, width=12, from_=year, to=year + 45, textvariable=self.project_end
-        ).grid(column=2, row=3, sticky=(W, E))
+        Spinbox(self.ship_info, from_=year+1, to=year+45, textvariable=self.project_end).grid(column=2, row=3, sticky=(W, E))
 
         ttk.Label(self.ship_info, text="Duration").grid(column=1, row=4, sticky=W)
-        dur = ttk.Label(self.ship_info, width=12, textvariable=self.duration)
+        dur = ttk.Label(self.ship_info, textvariable=self.duration)
         dur.grid(column=2, row=4, sticky=(W, E))
 
         #Trace changes and execute function
         self.startyear.trace("w", self.get_duration)
         self.project_end.trace("w", self.get_duration)
-        #self.duration.trace("w", self.get_project_end)
+        self.duration.trace("w", self.create_annualfig_rows)
 #---------------------------------------------------------------------------------------------
 
 #Project costs frame
     def proj_costs(self, *args):
-        self.vesselprice = StringVar()
-        self.othercosts = StringVar()
+        self.vesselprice = IntVar(0)
+        self.othercosts = IntVar()
         self.workingcapital = IntVar()
-        self.total = StringVar()
+        self.total = IntVar()
         self.salesprice = IntVar()
 
         self.project_costs = ttk.Labelframe(self.mainframe, text="Project costs")
         self.project_costs.grid(column=1, row=2, sticky=(N, W, E, S))
         self.project_costs.columnconfigure(1, minsize=120)   # Set minsize of column 1 to 120px
-        self.project_costs.columnconfigure(2, minsize=100)   # Set minsize of column 1 to 120px
+        self.project_costs.columnconfigure(2, minsize=75)   # Set minsize of column 1 to 120px
 
-        ttk.Label(self.project_costs, text="Vessel price"
-        ).grid(column=1, row=1, sticky=W)
-        vessel_price = ttk.Entry(self.project_costs, width=12, textvariable=self.vesselprice)
+        ttk.Label(self.project_costs, text="Vessel price").grid(column=1, row=1, sticky=W)
+        vessel_price = ttk.Entry(self.project_costs, textvariable=self.vesselprice)
         vessel_price.grid(column=2, row=1, sticky=(W, E))
 
-        ttk.Label(self.project_costs, text="Other costs"
-        ).grid(column=1, row=2, sticky=W)
-        other_costs = ttk.Entry(self.project_costs, width=12, textvariable=self.othercosts)
+        ttk.Label(self.project_costs, text="Other costs").grid(column=1, row=2, sticky=W)
+        other_costs = ttk.Entry(self.project_costs, textvariable=self.othercosts)
         other_costs.grid(column=2, row=2, sticky=(W, E))
 
-        ttk.Label(self.project_costs, text="Working capital"
-        ).grid(column=1, row=3, sticky=W)
-        working_capital = ttk.Entry(self.project_costs, width=12, textvariable=self.workingcapital)
+        ttk.Label(self.project_costs, text="Working capital").grid(column=1, row=3, sticky=W)
+        working_capital = ttk.Entry(self.project_costs, textvariable=self.workingcapital)
         working_capital.grid(column=2, row=3, sticky=(W, E))
 
-        ttk.Label(self.project_costs, text="Total costs"
-        ).grid(column=1, row=4, sticky=W)
-        total_ = ttk.Label(self.project_costs, width=12, textvariable=self.total)
+        ttk.Label(self.project_costs, text="Total costs").grid(column=1, row=4, sticky=W)
+        total_ = ttk.Label(self.project_costs, textvariable=self.total)
         total_.grid(column=2, row=4, sticky=(W, E))
 
-        ttk.Label(self.project_costs, text="Salesprice"
-        ).grid(column=1, row=5, sticky=W)
-        sales_price = ttk.Entry(self.project_costs, width=12, textvariable=self.salesprice)
+        ttk.Label(self.project_costs, text="Salesprice").grid(column=1, row=5, sticky=W)
+        sales_price = ttk.Entry(self.project_costs, textvariable=self.salesprice)
         sales_price.grid(column=2, row=5, sticky=(W, E))
 
         #Trace changes and execute function
@@ -116,46 +117,42 @@ class Vessel():
 
 #Operations frame
     def operation(self, *args):
-        self.commission = StringVar()
-        self.opcost = StringVar()
-        self.escopcost = StringVar()
-        self.admincosts = StringVar()
-        self.onhiredays = StringVar()
+        self.commission = IntVar()
+        self.opcost = IntVar()
+        self.escopcost = IntVar()
+        self.admincosts = IntVar()
+        self.onhiredays = IntVar()
 
         self.operations = ttk.Labelframe(self.mainframe, text="Operation")
         self.operations.grid(column=2, row=2, sticky=(N, W, E, S))
         self.operations.columnconfigure(1, minsize=120)
-        self.operations.columnconfigure(2, minsize=100)
+        self.operations.columnconfigure(2, minsize=75)
 
-        ttk.Label(self.operations, text="Commission rate"
-        ).grid(column=1, row=1, sticky=W)
-        comm_rate = ttk.Entry(self.operations, width=12, textvariable=self.commission)
+        ttk.Label(self.operations, text="Commission rate").grid(column=1, row=1, sticky=W)
+        comm_rate = ttk.Entry(self.operations, textvariable=self.commission)
         comm_rate.grid(column=2, row=1, sticky=(W, E))
 
-        ttk.Label(self.operations, text="Op cost / day"
-        ).grid(column=1, row=2, sticky=W)
-        op_cost = ttk.Entry(self.operations, width=12, textvariable=self.opcost)
+        ttk.Label(self.operations, text="Op cost / day").grid(column=1, row=2, sticky=W)
+        op_cost = ttk.Entry(self.operations, textvariable=self.opcost)
         op_cost.grid(column=2, row=2, sticky=(W, E))
 
-        ttk.Label(self.operations, text="Escalation op cost"
-        ).grid(column=1, row=3, sticky=W)
-        esc_opcost = ttk.Entry(self.operations, width=12, textvariable=self.escopcost)
+        ttk.Label(self.operations, text="Escalation op cost").grid(column=1, row=3, sticky=W)
+        esc_opcost = ttk.Entry(self.operations, textvariable=self.escopcost)
         esc_opcost.grid(column=2, row=3, sticky=(W, E))
 
-        ttk.Label(self.operations, text="Adm cost / year"
-        ).grid(column=1, row=4, sticky=W)
-        adm_costs = ttk.Entry(self.operations, width=12, textvariable=self.admincosts)
+        ttk.Label(self.operations, text="Adm cost / year").grid(column=1, row=4, sticky=W)
+        adm_costs = ttk.Entry(self.operations, textvariable=self.admincosts)
         adm_costs.grid(column=2, row=4, sticky=(W, E))
 
         ttk.Label(self.operations, text="On-hire days").grid(column=1, row=5, sticky=W)
-        onhire_days = ttk.Entry(self.operations, width=12, textvariable=self.onhiredays)
+        onhire_days = ttk.Entry(self.operations, textvariable=self.onhiredays)
         onhire_days.grid(column=2, row=5, sticky=(W, E))
 
 #---------------------------------------------------------------------------------------------
 
 #Finances frame
     def finances(self, *args):
-        self.gearing = StringVar()
+        self.gearing = IntVar()
         self.equity = IntVar()
         self.loans = IntVar()
         self.firstpri = IntVar()
@@ -166,63 +163,155 @@ class Vessel():
         self.financing.columnconfigure(2, minsize=100)
 
         ttk.Label(self.financing, text="Gearing").grid(column=1, row=1, sticky=W)
-        gearing_ = ttk.Entry(self.financing, width=12, textvariable=self.gearing)
-        gearing_.icursor(0)
+        gearing_ = ttk.Entry(self.financing, textvariable=self.gearing)
         gearing_.grid(column=2, row=1, sticky=(W, E))
 
         ttk.Label(self.financing, text="Equity").grid(column=1, row=2, sticky=W)
         #equity_ = ttk.Entry(self.financing, width=12, textvariable=equity)
         #equity_.grid(column=2, row=2, sticky=(W, E))
-        ttk.Label(self.financing, textvariable=self.equity
-        ).grid(column=2, row=2, sticky=W)
+        ttk.Label(self.financing, textvariable=self.equity).grid(column=2, row=2, sticky=W)
 
-        ttk.Label(self.financing, text="Loans"
-        ).grid(column=1, row=3, sticky=W)
+        ttk.Label(self.financing, text="Loans").grid(column=1, row=3, sticky=W)
         #loans_ = ttk.Entry(self.financing, width=12, textvariable=loans)
         #loans_.grid(column=2, row=3, sticky=(W, E))
-        ttk.Label(self.financing, textvariable=self.loans
-        ).grid(column=2, row=3, sticky=W)
+        ttk.Label(self.financing, textvariable=self.loans).grid(column=2, row=3, sticky=W)
 
 #---------------------------------------------------------------------------------------------
 
 #Finance rates frame    
     def financerates(self):
+        self.firstpri = IntVar()
+        self.secpri = IntVar()
+        self.interest_depo = IntVar()
+        self.interest_overdraft = IntVar()
+        self.discount_rate = IntVar()
+
         self.financerates = ttk.Labelframe(self.mainframe, text="Finance rates")
         self.financerates.grid(column=2, row=3, sticky=(N, W, E, S))
-        self.financerates.columnconfigure(1, minsize=120)
-        self.financerates.columnconfigure(2, minsize=100)
+        self.financerates.columnconfigure(1, minsize=75)
+        self.financerates.columnconfigure(2, minsize=75)
 
-        ttk.Label(self.financerates, text="1st pri loan").grid(column=1, row=1, sticky=W)
-        first_pri = ttk.Entry(self.financerates, width=12, textvariable=self.firstpri)
+        ttk.Label(self.financerates, text="1st priority loan").grid(column=1, row=1, sticky=W)
+        first_pri = ttk.Entry(self.financerates, textvariable=self.firstpri)
         first_pri.grid(column=2, row=1, sticky=(W, E))
+
+        ttk.Label(self.financerates, text="2nd priority loan").grid(column=1, row=2, sticky=W)
+        sec_pri = ttk.Entry(self.financerates, textvariable=self.secpri)
+        sec_pri.grid(column=2, row=2, sticky=(W, E))
+
+        ttk.Label(self.financerates, text="Interest on deposits").grid(column=1, row=3, sticky=W)
+        _interest_depo = ttk.Entry(self.financerates, textvariable=self.interest_depo)
+        _interest_depo.grid(column=2, row=3, sticky=(W, E))
+
+        ttk.Label(self.financerates, text="Interest on overdraft").grid(column=1, row=4, sticky=W)
+        _interest_overdraft = ttk.Entry(self.financerates, textvariable=self.interest_overdraft)
+        _interest_overdraft.grid(column=2, row=4, sticky=(W, E))
+
+        ttk.Label(self.financerates, text="Discount rate").grid(column=1, row=5, sticky=W)
+        _discount_rate = ttk.Entry(self.financerates, textvariable=self.discount_rate)
+        _discount_rate.grid(column=2, row=5, sticky=(W, E))
         #Trace changes and execute function
         self.gearing.trace("w", self.gearing_ratio)
+
+#Annual figures frame
+    def annual_figures(self, *args):
+        self.year = IntVar()
+        self.freightrate = IntVar()
+        self.dockingdays = IntVar()
+        self.dockingcost = IntVar()
+        self.rows = IntVar(value=1)
+
+        self.annualfigures = ttk.Labelframe(self.mainframe, text="Finance rates")
+        self.annualfigures.grid(column=3, columnspan=2, rowspan=3, row=1, sticky=(N, W, E, S))
+        self.annualfigures.columnconfigure(1, minsize=146)
+        self.annualfigures.columnconfigure(2, minsize=146)
+        self.annualfigures.columnconfigure(3, minsize=146)
+        self.annualfigures.columnconfigure(4, minsize=146)
+
+        ttk.Label(self.annualfigures, text="Year").grid(column=1, row=1, sticky=W)
+        ttk.Label(self.annualfigures, text="Freight rate").grid(column=2, row=1, sticky=W)
+        ttk.Label(self.annualfigures, text="Days in docking").grid(column=3, row=1, sticky=W)
+        ttk.Label(self.annualfigures, text="Docking cost").grid(column=4, row=1, sticky=W) 
+
+        ttk.Entry(self.annualfigures).grid(column=1, row=2, sticky=(W, E))
+        ttk.Entry(self.annualfigures).grid(column=2, row=2, sticky=(W, E))
+        ttk.Entry(self.annualfigures).grid(column=3, row=2, sticky=(W, E))
+        ttk.Entry(self.annualfigures).grid(column=4, row=2, sticky=(W, E))
+
+        for i in self.rows.get():
+            print("fuyck")   
+
 #---------------------------------------------------------------------------------------------
 
 #Functions
     def gridsetup(self):
         for child in self.mainframe.winfo_children(): 
-            child.grid_configure(padx=4, pady=1)
+            child.grid_configure(padx=4, pady=2)
 
         for child in self.ship_info.winfo_children():
-            child.grid_configure(padx=4, pady=1)
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set Child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
         for child in self.project_costs.winfo_children():
-            child.grid_configure(padx=4, pady=1)
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set Child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
         for child in self.operations.winfo_children():
-            child.grid_configure(padx=4, pady=1)
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set Child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
         for child in self.financing.winfo_children():
-            child.grid_configure(padx=4, pady=1)
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set Child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
-        for parent in self.mainframe.winfo_parent():
-            print(self.mainframe.winfo_parent)
+        for child in self.financerates.winfo_children():
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
+
+        for child in self.annualfigures.winfo_children():
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
     def get_duration(self, *args):
         try:
             end = self.project_end.get() - self.startyear.get()
-            self.duration.set("{} years".format(end))
+            self.duration.set(end)
         except ValueError:
             pass
 
@@ -235,14 +324,14 @@ class Vessel():
             
     def get_total(self, *args):
         try:
-            value = int(self.vesselprice.get()) + int(self.othercosts.get()) + self.workingcapital.get()
-            self.total.set("{:,}".format(value))
+            value = self.vesselprice.get() + self.othercosts.get() + self.workingcapital.get()
+            self.total.set("{:,.2f}".format(value))
             self.gearing_ratio()
         except ValueError:
             pass
 
     def gearing_ratio(self, *args):
-        if int(self.gearing.get()) < 101 and int(self.gearing.get()) >= 0 and len(self.gearing.get()) < 3:
+        if int(self.gearing.get()) < 101 and int(self.gearing.get()) >= 0:
             try:
                 loan = (int(self.vesselprice.get()) + int(self.othercosts.get()) + 
                         self.workingcapital.get()) / 100 * int(self.gearing.get())
@@ -253,6 +342,24 @@ class Vessel():
             except ValueError:
                 pass
         else:
-            self.gearing.set("")
+            self.gearing.set(0)
+            self.select_all(self)
 
-            
+    def select_all(self, event, *args):
+        _focus = self.root.focus_get()
+        if _focus.__class__ == ttk.Entry:
+            _focus.select_range(0, END)
+            #print(_focus + _focus.options)
+        else:
+            pass
+
+    def create_annualfig_rows(self, *args):
+        duration = self.duration.get()
+        i = 3
+
+        for iter in range(1, duration):
+            ttk.Entry(self.annualfigures).grid(column=1, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=2, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=3, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=4, row=i, sticky=(W, E))
+            i += i
