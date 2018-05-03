@@ -13,11 +13,14 @@ class Vessel():
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.columnconfigure(1, weight=1, minsize=300)
         self.mainframe.columnconfigure(2, weight=1, minsize=300)
-        self.mainframe.columnconfigure(3, weight=1, minsize=300)
-        self.mainframe.columnconfigure(4, weight=1, minsize=300)
+        self.mainframe.columnconfigure(3, weight=1, minsize=200)
+        self.mainframe.columnconfigure(4, weight=1, minsize=200)
         self.mainframe.rowconfigure(0, weight=1)
         self.mainframe.rowconfigure(1, weight=1)
         self.mainframe.rowconfigure(2, weight=1)
+        self.mainframe.rowconfigure(3, weight=1)
+        self.mainframe.rowconfigure(4, weight=1)
+        self.mainframe.rowconfigure(5, weight=1)
         
         #Vessel information frame
         self.vessel_info()
@@ -37,6 +40,9 @@ class Vessel():
         #Annual figures frame
         self.annual_figures()
 
+        #Loans frame
+        self.loan1_frame()
+
         #Grid/Layout setup
         self.gridsetup()
 
@@ -50,7 +56,7 @@ class Vessel():
         self.projectname = StringVar()
         self.startyear = IntVar()
         self.project_end = IntVar()
-        self.duration = IntVar()
+        self.duration = IntVar(value=1)
 
         self.ship_info = ttk.Labelframe(self.mainframe, text="Vessel information")
         self.ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
@@ -73,12 +79,12 @@ class Vessel():
         #Trace changes and execute function
         self.startyear.trace("w", self.get_duration)
         self.project_end.trace("w", self.get_duration)
-        self.duration.trace("w", self.create_annualfig_rows)
+        self.duration.trace("w", self.annual_figures)
 #---------------------------------------------------------------------------------------------
 
 #Project costs frame
     def proj_costs(self, *args):
-        self.vesselprice = IntVar(0)
+        self.vesselprice = IntVar()
         self.othercosts = IntVar()
         self.workingcapital = IntVar()
         self.total = IntVar()
@@ -219,28 +225,73 @@ class Vessel():
         self.freightrate = IntVar()
         self.dockingdays = IntVar()
         self.dockingcost = IntVar()
-        self.rows = IntVar(value=1)
-
-        self.annualfigures = ttk.Labelframe(self.mainframe, text="Finance rates")
+        self.rows = IntVar()
+        
+        self.annualfigures = ttk.Labelframe(self.mainframe, text="Annual figures")
         self.annualfigures.grid(column=3, columnspan=2, rowspan=3, row=1, sticky=(N, W, E, S))
-        self.annualfigures.columnconfigure(1, minsize=146)
-        self.annualfigures.columnconfigure(2, minsize=146)
-        self.annualfigures.columnconfigure(3, minsize=146)
-        self.annualfigures.columnconfigure(4, minsize=146)
+        self.annualfigures.columnconfigure(1, minsize=100)
+        self.annualfigures.columnconfigure(2, minsize=100)
+        self.annualfigures.columnconfigure(3, minsize=100)
+        self.annualfigures.columnconfigure(4, minsize=100)
 
         ttk.Label(self.annualfigures, text="Year").grid(column=1, row=1, sticky=W)
         ttk.Label(self.annualfigures, text="Freight rate").grid(column=2, row=1, sticky=W)
         ttk.Label(self.annualfigures, text="Days in docking").grid(column=3, row=1, sticky=W)
         ttk.Label(self.annualfigures, text="Docking cost").grid(column=4, row=1, sticky=W) 
 
-        ttk.Entry(self.annualfigures).grid(column=1, row=2, sticky=(W, E))
-        ttk.Entry(self.annualfigures).grid(column=2, row=2, sticky=(W, E))
-        ttk.Entry(self.annualfigures).grid(column=3, row=2, sticky=(W, E))
-        ttk.Entry(self.annualfigures).grid(column=4, row=2, sticky=(W, E))
+        i = 2
+        for x in range(0, self.duration.get()):
+            ttk.Entry(self.annualfigures).grid(column=1, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=2, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=3, row=i, sticky=(W, E))
+            ttk.Entry(self.annualfigures).grid(column=4, row=i, sticky=(W, E))
+            i += i
 
-        for i in self.rows.get():
-            print("fuyck")   
+        for child in self.annualfigures.winfo_children():
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass
 
+        for child in self.mainframe.winfo_children(): 
+            child.grid_configure(padx=4, pady=2)
+#---------------------------------------------------------------------------------------------
+
+#Loans frame
+    def loan1_frame(self, *args):
+        self.loansize = IntVar()
+        self.duration = IntVar()
+        self.balloondur = IntVar()
+        self.balloon = IntVar()
+        self.yearlyinst = IntVar()
+
+        self.loan_one = ttk.Labelframe(self.mainframe, text="1st Priority mortage loan")
+        self.loan_one.grid(column=1, row=5, sticky=(N, W, E, S))
+        self.loan_one.columnconfigure(1, minsize=120)
+        self.loan_one.columnconfigure(2, minsize=75)
+
+        ttk.Label(self.loan_one, text="Loan amount").grid(column=1, row=2, sticky=W)
+        loan_size = ttk.Entry(self.loan_one, textvariable=self.loansize)
+        loan_size.grid(column=2, row=2, sticky=(W, E))
+
+        ttk.Label(self.loan_one, text="Duration").grid(column=1, row=3, sticky=W)
+        duration = ttk.Entry(self.loan_one, textvariable=self.duration)
+        duration.grid(column=2, row=3, sticky=(W, E))
+
+        ttk.Label(self.loan_one, text="Ballon after X years").grid(column=1, row=4, sticky=W)
+        Spinbox(self.loan_one, textvariable=self.balloondur, from_=0, to=25).grid(column=2, row=4, sticky=(W, E))
+
+        ttk.Label(self.loan_one, text="Balloon").grid(column=1, row=5, sticky=W)
+        balloon_ = ttk.Entry(self.loan_one, textvariable=self.balloon)
+        balloon_.grid(column=2, row=5, sticky=(W, E))
+
+        ttk.Label(self.loan_one, text="Yearly installments").grid(column=1, row=6, sticky=W)
+        yearly_inst = ttk.Entry(self.loan_one, textvariable=self.yearlyinst)
+        yearly_inst.grid(column=2, row=6, sticky=(W, E))
 #---------------------------------------------------------------------------------------------
 
 #Functions
@@ -298,7 +349,18 @@ class Vessel():
             else:
                 pass
 
+        ''' ##Executed in annual_figures method##
         for child in self.annualfigures.winfo_children():
+            child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+            if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+                try:
+                    child.bind("<FocusIn>", self.select_all)
+                except AttributeError:
+                    pass
+            else:
+                pass '''
+
+        for child in self.loan_one.winfo_children():
             child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
             if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
                 try:
@@ -354,12 +416,4 @@ class Vessel():
             pass
 
     def create_annualfig_rows(self, *args):
-        duration = self.duration.get()
-        i = 3
-
-        for iter in range(1, duration):
-            ttk.Entry(self.annualfigures).grid(column=1, row=i, sticky=(W, E))
-            ttk.Entry(self.annualfigures).grid(column=2, row=i, sticky=(W, E))
-            ttk.Entry(self.annualfigures).grid(column=3, row=i, sticky=(W, E))
-            ttk.Entry(self.annualfigures).grid(column=4, row=i, sticky=(W, E))
-            i += i
+        pass
