@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import ttk
 import datetime
 #import PJ_Functions as func
-
 class Vessel():
 	def __init__(self):
 		self.root = Tk()
@@ -39,7 +38,6 @@ class Vessel():
 
 		#Annual figures frame
 		self.annual_figures()
-		self.annual_figures_rows()
 
 		#Loans frame
 		self.loan1_frame()
@@ -55,9 +53,11 @@ class Vessel():
 	def vessel_info(self, *args):
 		year = datetime.date.today().year
 		self.projectname = StringVar()
-		self.startyear = IntVar()
-		self.project_end = IntVar()
+		self.startyear = IntVar(value=year)
+		self.project_end = IntVar(value=year+1)
 		self.duration = IntVar(value=1)
+		print(self.project_end.get())
+		print("Duration: " + str(self.duration.get()))
 
 		self.ship_info = ttk.Labelframe(self.mainframe, text="Vessel information")
 		self.ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
@@ -68,10 +68,10 @@ class Vessel():
 		ttk.Entry(self.ship_info, textvariable=self.projectname).grid(column=2, row=1, sticky=(W, E))
 
 		ttk.Label(self.ship_info, text="Project start").grid(column=1, row=2, sticky=W)
-		Spinbox(self.ship_info, from_=year, to=year+45, textvariable=self.startyear).grid(column=2, row=2, sticky=(W, E))
+		Spinbox(self.ship_info, from_=year, to=year + 45, textvariable=self.startyear).grid(column=2, row=2, sticky=(W, E))
 
 		ttk.Label(self.ship_info, text="Project end").grid(column=1, row=3, sticky=W)
-		Spinbox(self.ship_info, from_=year+1, to=year+45, textvariable=self.project_end).grid(column=2, row=3, sticky=(W, E))
+		Spinbox(self.ship_info, from_=year + 1, to=year + 45, textvariable=self.project_end).grid(column=2, row=3, sticky=(W, E))
 
 		ttk.Label(self.ship_info, text="Duration").grid(column=1, row=4, sticky=W)
 		dur = ttk.Label(self.ship_info, textvariable=self.duration)
@@ -188,7 +188,7 @@ class Vessel():
 
 	#---------------------------------------------------------------------------------------------
 
-	#Finance rates frame    
+	#Finance rates frame
 	def financerates(self):
 		self.firstpri = IntVar()
 		self.secpri = IntVar()
@@ -229,7 +229,7 @@ class Vessel():
 		self.freightrate = IntVar()
 		self.dockingdays = IntVar()
 		self.dockingcost = IntVar()
-		self.rows = IntVar()
+		self.rows = IntVar(value=1)
 
 		self.annualfigures = ttk.Labelframe(self.mainframe, text="Annual figures")
 		self.annualfigures.grid(column=3, columnspan=2, rowspan=3, row=1, sticky=(N, W, E, S))
@@ -242,28 +242,11 @@ class Vessel():
 		ttk.Label(self.annualfigures, text="Freight rate").grid(column=2, row=1, sticky=W)
 		ttk.Label(self.annualfigures, text="Days in docking").grid(column=3, row=1, sticky=W)
 		ttk.Label(self.annualfigures, text="Docking cost").grid(column=4, row=1, sticky=W)
-		self.rows.trace("w", self.annual_figures_rows)
 
-	def annual_figures_rows(self, *args):
-		i = 2
-		print("row{}_".format(self.duration.get()))
-		if self.duration.get() >= (i - 1):
-			for x in range(0, self.duration.get()):
-				ttk.Entry(self.annualfigures).grid(column=1, row=i)
-				ttk.Entry(self.annualfigures).grid(column=2, row=i)
-				ttk.Entry(self.annualfigures).grid(column=3, row=i)
-				ttk.Entry(self.annualfigures).grid(column=4, row=i)
-				i += 1
-				print(self.annualfigures.winfo_children)
-		if self.duration.get() < (i - 1):
-			for child in self.annualfigures.winfo_children():
-				if int(child.grid_info()['row']) >= i:
-					#child.grid_remove()
-					print(child.grid_info()['row'])
-					i -= 1
-				""" if child.grid_info()['row']:
-					child.grid_remove()
-					i -= 1 """
+		ttk.Entry(self.annualfigures).grid(column=1, row=2)
+		ttk.Entry(self.annualfigures).grid(column=3, row=2)
+		ttk.Entry(self.annualfigures).grid(column=4, row=2)
+		ttk.Entry(self.annualfigures).grid(column=2, row=2)
 
 		for child in self.annualfigures.winfo_children():
 			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
@@ -274,9 +257,44 @@ class Vessel():
 					pass
 			else:
 				pass
-
 		for child in self.mainframe.winfo_children(): 
 			child.grid_configure(padx=4, pady=2)
+
+		self.rows.trace("w", self.annual_figures_rows)
+
+	def annual_figures_rows(self, *args):
+		duration_ = self.duration.get()
+		row = self.rows.get()
+
+		if duration_ > row:
+			ttk.Entry(self.annualfigures).grid(column=1, row=row+2)
+			ttk.Entry(self.annualfigures).grid(column=3, row=row+2)
+			ttk.Entry(self.annualfigures).grid(column=4, row=row+2)
+			ttk.Entry(self.annualfigures).grid(column=2, row=row+2)
+			self.rows.set(row + 1)
+			#print(self.rows.get())
+		if duration_ < row:
+			print("Row: " + str(row))
+			for child in self.annualfigures.winfo_children():
+				print(child.grid_info()['row'])
+				if child.grid_info()['row'] < row+1:
+					child.grid_forget()
+					print("Triggered remove")
+			self.rows.set(row - 1)
+				
+			
+		for child in self.annualfigures.winfo_children():
+			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+			if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+				try:
+					child.bind("<FocusIn>", self.select_all)
+				except AttributeError:
+					pass
+			else:
+				pass
+		for child in self.mainframe.winfo_children(): 
+			child.grid_configure(padx=4, pady=2)
+
 	#---------------------------------------------------------------------------------------------
 
 	#Loans frame
@@ -310,9 +328,9 @@ class Vessel():
 		ttk.Label(self.loan_one, text="Yearly installments").grid(column=1, row=6, sticky=W)
 		yearly_inst = ttk.Entry(self.loan_one, textvariable=self.yearlyinst)
 		yearly_inst.grid(column=2, row=6, sticky=(W, E))
-#---------------------------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
 
-#Functions
+	#Functions
 	def gridsetup(self):
 		for child in self.mainframe.winfo_children(): 
 			child.grid_configure(padx=4, pady=2)
@@ -392,7 +410,7 @@ class Vessel():
 		try:
 			end = self.project_end.get() - self.startyear.get()
 			self.duration.set(end)
-			self.rows.set(end)
+			print("Duration: " + str(self.duration.get()))
 		except ValueError:
 			pass
 
@@ -414,11 +432,9 @@ class Vessel():
 	def gearing_ratio(self, *args):
 		if int(self.gearing.get()) < 101 and int(self.gearing.get()) >= 0:
 			try:
-				loan = (int(self.vesselprice.get()) + int(self.othercosts.get()) + 
-						self.workingcapital.get()) / 100 * int(self.gearing.get())
+				loan = (int(self.vesselprice.get()) + int(self.othercosts.get()) + self.workingcapital.get()) / 100 * int(self.gearing.get())
 				self.loans.set("{:,.2f}".format(loan))
-				equi = (int(self.vesselprice.get()) + int(self.othercosts.get()) + 
-						self.workingcapital.get()) / 100 * (100 - int(self.gearing.get()))
+				equi = (int(self.vesselprice.get()) + int(self.othercosts.get()) + self.workingcapital.get()) / 100 * (100 - int(self.gearing.get()))
 				self.equity.set("{:,.2f}".format(equi))
 			except ValueError:
 				pass
@@ -433,3 +449,5 @@ class Vessel():
 			#print(_focus + _focus.options)
 		else:
 			pass
+
+	
