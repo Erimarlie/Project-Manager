@@ -56,8 +56,6 @@ class Vessel():
 		self.startyear = IntVar(value=year)
 		self.project_end = IntVar(value=year+1)
 		self.duration = IntVar(value=1)
-		print(self.project_end.get())
-		print("Duration: " + str(self.duration.get()))
 
 		self.ship_info = ttk.Labelframe(self.mainframe, text="Vessel information")
 		self.ship_info.grid(column=1, row=1, sticky=(N, W, E, S))
@@ -266,22 +264,17 @@ class Vessel():
 		duration_ = self.duration.get()
 		row = self.rows.get()
 
-		if duration_ > row:
+		if duration_ > row: #Add another row
 			ttk.Entry(self.annualfigures).grid(column=1, row=row+2)
 			ttk.Entry(self.annualfigures).grid(column=3, row=row+2)
 			ttk.Entry(self.annualfigures).grid(column=4, row=row+2)
 			ttk.Entry(self.annualfigures).grid(column=2, row=row+2)
 			self.rows.set(row + 1)
-			#print(self.rows.get())
-		if duration_ < row:
-			print("Row: " + str(row))
-			for child in self.annualfigures.winfo_children():
-				print(child.grid_info()['row'])
-				if child.grid_info()['row'] < row+1:
-					child.grid_forget()
-					print("Triggered remove")
+		if duration_ < row: #Remove row
+			for entry in self.annualfigures.grid_slaves():
+				if entry.grid_info()['row'] > row:
+					entry.destroy()
 			self.rows.set(row - 1)
-				
 			
 		for child in self.annualfigures.winfo_children():
 			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
@@ -410,7 +403,6 @@ class Vessel():
 		try:
 			end = self.project_end.get() - self.startyear.get()
 			self.duration.set(end)
-			print("Duration: " + str(self.duration.get()))
 		except ValueError:
 			pass
 
