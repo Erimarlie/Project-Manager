@@ -9,17 +9,17 @@ class Vessel():
 		self.root.geometry("1200x800")
 		self.mainframe = ttk.Frame(self.root)
 		self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-		self.mainframe.columnconfigure(0, weight=1)
-		self.mainframe.columnconfigure(1, weight=1, minsize=300)
-		self.mainframe.columnconfigure(2, weight=1, minsize=300)
-		self.mainframe.columnconfigure(3, weight=1, minsize=200)
-		self.mainframe.columnconfigure(4, weight=1, minsize=200)
-		self.mainframe.rowconfigure(0, weight=1)
-		self.mainframe.rowconfigure(1, weight=1)
-		self.mainframe.rowconfigure(2, weight=1)
-		self.mainframe.rowconfigure(3, weight=1)
-		self.mainframe.rowconfigure(4, weight=1)
-		self.mainframe.rowconfigure(5, weight=1)
+		#self.mainframe.columnconfigure(0, weight=1)
+		#self.mainframe.columnconfigure(1, weight=1, minsize=300)
+		#self.mainframe.columnconfigure(2, weight=1, minsize=300)
+		#self.mainframe.columnconfigure(3, weight=1, minsize=200)
+		#self.mainframe.columnconfigure(4, weight=1, minsize=200)
+		#self.mainframe.rowconfigure(0, weight=1)
+		#self.mainframe.rowconfigure(1, weight=1)
+		#self.mainframe.rowconfigure(2, weight=1)
+		#self.mainframe.rowconfigure(3, weight=1)
+		#self.mainframe.rowconfigure(4, weight=1)
+		#self.mainframe.rowconfigure(5, weight=1)
 
 		#Vessel information frame
 		self.vessel_info()
@@ -41,6 +41,7 @@ class Vessel():
 
 		#Loans frame
 		self.loan1_frame()
+		self.loan2_frame()
 
 		#Grid/Layout setup
 		self.gridsetup()
@@ -321,6 +322,37 @@ class Vessel():
 		ttk.Label(self.loan_one, text="Yearly installments").grid(column=1, row=6, sticky=W)
 		yearly_inst = ttk.Entry(self.loan_one, textvariable=self.yearlyinst)
 		yearly_inst.grid(column=2, row=6, sticky=(W, E))
+
+	def loan2_frame(self, *args):
+		self.loansize = IntVar()
+		self.loan_duration = IntVar()
+		self.balloondur = IntVar()
+		self.balloon = IntVar()
+		self.yearlyinst = IntVar()
+
+		self.loan_two = ttk.Labelframe(self.mainframe, text="1st Priority mortage loan")
+		self.loan_two.grid(column=2, row=5, sticky=(N, W, E, S))
+		self.loan_two.columnconfigure(1, minsize=120)
+		self.loan_two.columnconfigure(2, minsize=75)
+
+		ttk.Label(self.loan_two, text="Loan amount").grid(column=1, row=2, sticky=W)
+		loan_size = ttk.Entry(self.loan_two, textvariable=self.loansize)
+		loan_size.grid(column=2, row=2, sticky=(W, E))
+
+		ttk.Label(self.loan_two, text="Duration").grid(column=1, row=3, sticky=W)
+		duration = ttk.Entry(self.loan_two, textvariable=self.loan_duration)
+		duration.grid(column=2, row=3, sticky=(W, E))
+
+		ttk.Label(self.loan_two, text="Ballon after X years").grid(column=1, row=4, sticky=W)
+		Spinbox(self.loan_two, textvariable=self.balloondur, from_=0, to=25).grid(column=2, row=4, sticky=(W, E))
+
+		ttk.Label(self.loan_two, text="Balloon").grid(column=1, row=5, sticky=W)
+		balloon_ = ttk.Entry(self.loan_two, textvariable=self.balloon)
+		balloon_.grid(column=2, row=5, sticky=(W, E))
+
+		ttk.Label(self.loan_two, text="Yearly installments").grid(column=1, row=6, sticky=W)
+		yearly_inst = ttk.Entry(self.loan_two, textvariable=self.yearlyinst)
+		yearly_inst.grid(column=2, row=6, sticky=(W, E))
 	#---------------------------------------------------------------------------------------------
 
 	#Functions
@@ -390,6 +422,16 @@ class Vessel():
 				pass '''
 
 		for child in self.loan_one.winfo_children():
+			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+			if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+				try:
+					child.bind("<FocusIn>", self.select_all)
+				except AttributeError:
+					pass
+			else:
+				pass
+
+		for child in self.loan_two.winfo_children():
 			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
 			if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
 				try:
