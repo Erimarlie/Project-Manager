@@ -6,20 +6,20 @@ class Vessel():
 	def __init__(self):
 		self.root = Tk()
 		self.root.title("Project Manager")
-		self.root.geometry("1200x800")
+		self.root.geometry("1600x900")
 		self.mainframe = ttk.Frame(self.root)
 		self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-		#self.mainframe.columnconfigure(0, weight=1)
-		#self.mainframe.columnconfigure(1, weight=1, minsize=300)
-		#self.mainframe.columnconfigure(2, weight=1, minsize=300)
-		#self.mainframe.columnconfigure(3, weight=1, minsize=200)
-		#self.mainframe.columnconfigure(4, weight=1, minsize=200)
-		#self.mainframe.rowconfigure(0, weight=1)
-		#self.mainframe.rowconfigure(1, weight=1)
-		#self.mainframe.rowconfigure(2, weight=1)
-		#self.mainframe.rowconfigure(3, weight=1)
-		#self.mainframe.rowconfigure(4, weight=1)
-		#self.mainframe.rowconfigure(5, weight=1)
+		self.mainframe.columnconfigure(0, weight=1)
+		self.mainframe.columnconfigure(1, weight=1, minsize=300)
+		self.mainframe.columnconfigure(2, weight=1, minsize=300)
+		self.mainframe.columnconfigure(3, weight=1, minsize=200)
+		self.mainframe.columnconfigure(4, weight=1, minsize=200)
+		self.mainframe.rowconfigure(0, weight=1)
+		self.mainframe.rowconfigure(1, weight=1)
+		self.mainframe.rowconfigure(2, weight=1)
+		self.mainframe.rowconfigure(3, weight=1)
+		self.mainframe.rowconfigure(4, weight=1)
+		self.mainframe.rowconfigure(5, weight=1)
 
 		#Vessel information frame
 		self.vessel_info()
@@ -42,6 +42,9 @@ class Vessel():
 		#Loans frame
 		self.loan1_frame()
 		self.loan2_frame()
+
+		#Main results frame
+		self.main_results()
 
 		#Grid/Layout setup
 		self.gridsetup()
@@ -355,6 +358,27 @@ class Vessel():
 		yearly_inst.grid(column=2, row=6, sticky=(W, E))
 	#---------------------------------------------------------------------------------------------
 
+	#Main results frame
+	def main_results(self, *args):
+		self.irr = IntVar()
+		self.ebitda = IntVar()
+		self.npv = IntVar()
+
+		self.mainres = ttk.Labelframe(self.mainframe, text="Main Results")
+		self.mainres.grid(column=1, row=6, sticky=(N, W, E, S))
+		self.mainres.columnconfigure(1, minsize=120)
+		self.mainres.columnconfigure(2, minsize=40)
+
+		ttk.Label(self.mainres, text="IRR").grid(column=1, row=1, sticky=W)
+		ttk.Label(self.mainres, textvariable=self.irr).grid(column=2, row=1, sticky=W)
+
+		ttk.Label(self.mainres, text="EBITDA").grid(column=1, row=2, sticky=W)
+		ttk.Label(self.mainres, textvariable=self.ebitda).grid(column=2, row=2, sticky=W)
+
+		ttk.Label(self.mainres, text="NPV (15% discount)").grid(column=1, row=3, sticky=W)
+		ttk.Label(self.mainres, textvariable=self.npv).grid(column=2, row=3, sticky=W)
+	#---------------------------------------------------------------------------------------------
+
 	#Functions
 	def gridsetup(self):
 		for child in self.mainframe.winfo_children(): 
@@ -432,6 +456,16 @@ class Vessel():
 				pass
 
 		for child in self.loan_two.winfo_children():
+			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
+			if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
+				try:
+					child.bind("<FocusIn>", self.select_all)
+				except AttributeError:
+					pass
+			else:
+				pass
+
+		for child in self.mainres.winfo_children():
 			child.grid_configure(padx=4, pady=2)    #Configures child.grid padding
 			if child.__class__ == ttk.Entry:        #Set child.Entry widgets to execute command on focusin
 				try:
